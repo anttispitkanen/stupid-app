@@ -1,6 +1,8 @@
 # Stupid :DD
 
-See `demo/stupid-demo.mow` for a demo video (no sound tho :(()
+See [demo video](https://drive.google.com/open?id=1SxOWwzrTuR2BVUBlL5faPAdHNFf3Dkak) (no sound tho :/)
+
+![](demo/stupid-screenshot.png)
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
