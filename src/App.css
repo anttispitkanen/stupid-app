@@ -1,11 +1,18 @@
+* {
+  font-family: Comic Sans MS, cursive, sans-serif;
+}
+
 .App {
   text-align: center;
 }
 
 .App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
+  animation: App-logo-spin infinite 2s linear;
+  height: 10vmin;
   pointer-events: none;
+  position: absolute;
+  top: 180px;
+  left: 45vw;
 }
 
 .App-header {
@@ -21,6 +28,52 @@
 
 .App-link {
   color: #61dafb;
+}
+
+h1 {
+  margin-bottom: 100px;
+}
+
+#text-source-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#text-source-container button {
+  margin: 10px;
+}
+
+#synonymized-text-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#synonymized-text-container p {
+  max-width: 800px;
+}
+
+#synonymized-text-container button {
+  margin: 10px;
+}
+
+h2 {
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
+.text-area {
+  min-height: 150px;
+  width: 100%;
+  max-width: 800px;
+  font-size: 1rem;
+}
+
+footer {
+  margin: 100px 20px 20px;
 }
 
 @keyframes App-logo-spin {
