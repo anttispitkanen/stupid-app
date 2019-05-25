@@ -77,9 +77,12 @@ class App extends React.Component {
     let text = this.state.originalText;
 
     synonymArray.forEach(syn => {
+      // create array where original word is appended to synonyms,
+      // otherwise the original word is never used
+      const synonymsAndWord = [...syn.synonyms, syn.word];
       const replacement =
-        syn.synonyms[Math.floor(Math.random() * syn.synonyms.length)];
-      text = text.replace(syn.word, replacement);
+        synonymsAndWord[Math.floor(Math.random() * synonymsAndWord.length)];
+      text = text.replace(new RegExp(syn.word, 'i'), replacement);
     });
 
     return text;
