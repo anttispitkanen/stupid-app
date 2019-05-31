@@ -12,6 +12,9 @@ class App extends React.Component {
     synonymsError: false,
     synonyms: [],
     synonymizedText: '',
+    syllablesLoading: false,
+    syllablesError: false,
+    syllables: [],
   };
 
   fetchRandomText = async () => {
@@ -63,6 +66,7 @@ class App extends React.Component {
         synonymsLoading: false,
         synonyms: filteredData,
         synonymizedText: this.reword(filteredData),
+        syllables: [],
       });
     } catch (err) {
       console.error('Error! :DD' + err);
@@ -74,6 +78,10 @@ class App extends React.Component {
   };
 
   reword = synonymArray => {
+    this.setState({
+      syllables: [],
+    });
+
     let text = this.state.originalText;
 
     synonymArray.forEach(syn => {
@@ -86,6 +94,58 @@ class App extends React.Component {
     });
 
     return text;
+  };
+
+  syllableize = async () => {
+    const body = { text: this.state.synonymizedText };
+
+    try {
+      this.setState({ syllablesLoading: true, syllablesError: false });
+      const res = await fetch('http://localhost:3001/syllables', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) throw Error('syllables re not ok! :DD');
+
+      const data = await res.json();
+      const filteredData = data.filter(
+        wobj => wobj && wobj.syllables && wobj.syllables.length > 1,
+      );
+
+      // some syllables come in empty, such as ["a", "", "r"], filter those out
+      const fixedData = filteredData.map(wordObj => ({
+        ...wordObj,
+        syllables: wordObj.syllables.filter(syl => syl && syl.length > 0),
+      }));
+
+      // syllableize words that match
+      let text = this.state.synonymizedText;
+
+      fixedData.forEach(syllableObject => {
+        text = text.replace(
+          new RegExp(syllableObject.word, 'i'),
+          syllableObject.syllables.join('-'),
+        );
+      });
+
+      this.setState({
+        syllablesError: false,
+        syllablesLoading: false,
+        syllables: fixedData,
+        synonymizedText: text,
+      });
+    } catch (err) {
+      console.error(err);
+      this.setState({
+        syllablesLoading: false,
+        syllablesError: true,
+        syllables: [],
+      });
+    }
   };
 
   render() {
@@ -115,9 +175,9 @@ class App extends React.Component {
             </button>
           </div>
 
-          {(this.state.textError || this.state.synonymsError) && (
-            <span>Error! :DD</span>
-          )}
+          {(this.state.textError ||
+            this.state.synonymsError ||
+            this.state.syllablesError) && <span>Error! :DD</span>}
         </div>
 
         <div id="synonymized-text-container">
@@ -135,6 +195,16 @@ class App extends React.Component {
           </button>
 
           <button
+            disabled={
+              this.state.synonymizedText.length === 0 ||
+              this.state.syllables.length > 0
+            }
+            onClick={this.syllableize}
+          >
+            Make it easier! :DD
+          </button>
+
+          <button
             disabled={this.state.synonymizedText.length === 0}
             onClick={async () => await say(this.state.synonymizedText)}
           >
@@ -144,7 +214,9 @@ class App extends React.Component {
 
         <footer>® Stupidity 2019</footer>
 
-        {(this.state.textLoading || this.state.synonymsLoading) && (
+        {(this.state.textLoading ||
+          this.state.synonymsLoading ||
+          this.state.syllablesLoading) && (
           <img className="App-logo" src={logo} />
         )}
       </div>
