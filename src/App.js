@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import logo from './logo.svg';
 import { say } from './synth';
+import recognition from './speechRecognition';
 
 class App extends React.Component {
   state = {
@@ -15,6 +16,24 @@ class App extends React.Component {
     syllablesLoading: false,
     syllablesError: false,
     syllables: [],
+  };
+
+  componentDidMount = () => {
+    recognition.onresult = event => {
+      const transcript =
+        event.results &&
+        event.results[0] &&
+        event.results[0][0] &&
+        event.results[0][0].transcript;
+
+      this.setState({
+        originalText: transcript,
+      });
+    };
+  };
+
+  listen = () => {
+    recognition.start();
   };
 
   fetchRandomText = async () => {
@@ -162,7 +181,10 @@ class App extends React.Component {
           />
           <div id="source-text-buttons-container">
             <button onClick={this.fetchRandomText}>
-              I don't know, gimme text! :D
+              I don't know, gimme text! :DD
+            </button>
+            <button onClick={this.listen}>
+              Hold on I want to say something! :DD
             </button>
             <button
               disabled={
