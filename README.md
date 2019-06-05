@@ -1,6 +1,6 @@
 # Stupid App! :DD
 
-    Have you ever wanted to say something, but weren't really sure which words to use? Fear not for there's a solution! :DD
+> Have you ever wanted to say something, but weren't really sure which words to use? Fear not for there's a solution! :DD
 
 A very useful application started at [Junction](https://www.hackjunction.com/) Stupid Hack 2019 hackathon, and for some reason continued a bit afterwards as well! :DD
 
