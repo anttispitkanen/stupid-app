@@ -3,6 +3,12 @@ import './App.css';
 import logo from './logo.svg';
 import { say } from './synth';
 import recognition from './speechRecognition';
+import config from './config';
+
+const HEADERS = {
+  'Content-Type': 'application/json',
+  'x-api-key': config.SERVERLESS_API_KEY,
+};
 
 class App extends React.Component {
   state = {
@@ -39,7 +45,13 @@ class App extends React.Component {
   fetchRandomText = async () => {
     try {
       this.setState({ textLoading: true, textError: false });
-      const res = await fetch('http://localhost:3001/random-text?lang=en');
+      const res = await fetch(
+        `${config.SERVERLESS_API_URL}/random-text?lang=en`,
+        {
+          method: 'GET',
+          headers: HEADERS,
+        },
+      );
       if (!res.ok) throw Error('text res not ok! :DD');
       const data = await res.json();
       this.setState({
@@ -67,11 +79,9 @@ class App extends React.Component {
 
     try {
       this.setState({ synonymsLoading: true, synonymsError: false });
-      const res = await fetch('http://localhost:3001/synonymize', {
+      const res = await fetch(`${config.SERVERLESS_API_URL}/synonymize`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: HEADERS,
         body: JSON.stringify(body),
       });
 
@@ -120,11 +130,9 @@ class App extends React.Component {
 
     try {
       this.setState({ syllablesLoading: true, syllablesError: false });
-      const res = await fetch('http://localhost:3001/syllables', {
+      const res = await fetch(`${config.SERVERLESS_API_URL}/syllables`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: HEADERS,
         body: JSON.stringify(body),
       });
 
@@ -167,43 +175,51 @@ class App extends React.Component {
     }
   };
 
+  textAwesomizer = text => {
+    return /\W/.test(text[text.length - 1])
+      ? `${text.substr(0, text.length - 1)}! :DD`
+      : `${text}! :DD`;
+  };
+
   render() {
     return (
       <div className="App">
-        <h1>Make yourself more expressive! :DD</h1>
+        <h1>{this.textAwesomizer('Make yourself more expressive')}</h1>
 
         <div id="text-source-container">
           <textarea
             className="text-area"
-            placeholder="Write some text here :DD"
+            placeholder={this.textAwesomizer('Write some text here')}
             value={this.state.originalText}
             onChange={this.writeText}
           />
           <div id="source-text-buttons-container">
             <button onClick={this.fetchRandomText}>
-              I don't know, gimme text! :DD
+              {this.textAwesomizer("I don't know, gimme text")}
             </button>
             <button onClick={this.listen}>
-              Hold on I want to say something! :DD
+              {this.textAwesomizer('Hold on I want to say something')}
             </button>
             <button
               disabled={
-                this.state.originalText.length < 10 ||
+                this.state.originalText.length < 2 ||
                 this.state.originalText.length > 400
               }
               onClick={this.fetchSynonyms}
             >
-              Do magic! :DD
+              {this.textAwesomizer('Do magic')}
             </button>
           </div>
 
           {(this.state.textError ||
             this.state.synonymsError ||
-            this.state.syllablesError) && <span>Error! :DD</span>}
+            this.state.syllablesError) && (
+            <span>{this.textAwesomizer('Do magic')}</span>
+          )}
         </div>
 
         <div id="synonymized-text-container">
-          <h2>Here is how you could say that :DD</h2>
+          <h2>{this.textAwesomizer('Here is how you could say that')}</h2>
           <p>{this.state.synonymizedText}</p>
           <button
             disabled={this.state.synonyms.length === 0}
@@ -213,7 +229,7 @@ class App extends React.Component {
               })
             }
           >
-            Say it differently! :DD
+            {this.textAwesomizer('Say it differently')}
           </button>
 
           <button
@@ -223,18 +239,18 @@ class App extends React.Component {
             }
             onClick={this.syllableize}
           >
-            Make it easier! :DD
+            {this.textAwesomizer('Make it easier')}
           </button>
 
           <button
             disabled={this.state.synonymizedText.length === 0}
             onClick={async () => await say(this.state.synonymizedText)}
           >
-            Say it out loud! :DD
+            {this.textAwesomizer('Say it out loud')}
           </button>
         </div>
 
-        <footer>® Stupidity 2019</footer>
+        <footer>{this.textAwesomizer('® Stupidity 2019')}</footer>
 
         {(this.state.textLoading ||
           this.state.synonymsLoading ||
