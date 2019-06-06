@@ -94,7 +94,7 @@ class App extends React.Component {
         synonymsError: false,
         synonymsLoading: false,
         synonyms: filteredData,
-        synonymizedText: this.reword(filteredData),
+        synonymizedText: this.textAwesomizer(this.reword(filteredData)),
         syllables: [],
       });
     } catch (err) {
